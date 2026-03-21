@@ -1,0 +1,29 @@
+export type Screen =
+  | "welcome"
+  | "access-check"
+  | "no-access"
+  | "troubleshoot"
+  | "upsell"
+  | "project-setup"
+  | "cloning"
+  | "done"
+  | "error";
+
+export interface Template {
+  name: string;
+  description: string;
+  repo: string;
+}
+
+export const TEMPLATES: Template[] = [
+  {
+    name: "🍌 Platano",
+    description: "React Native Starter",
+    repo: "https://github.com/Code-with-Beto/platano.git",
+  },
+];
+
+export const URLS = {
+  platano: "https://cwb.sh/platano?r=ship-cli",
+  pricing: "https://codewithbeto.dev/pricing",
+};
