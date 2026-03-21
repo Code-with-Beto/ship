@@ -22,9 +22,24 @@ export function App() {
   const [projectName, setProjectName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
+  const BACK_MAP: Partial<Record<Screen, Screen>> = {
+    "access-check": "welcome",
+    "no-access": "welcome",
+    troubleshoot: "no-access",
+    upsell: "no-access",
+    "project-setup": "welcome",
+    error: "welcome",
+  };
+
   useKeyboard((key) => {
-    if (key.name === "escape" || (key.ctrl && key.name === "c")) {
+    if (key.ctrl && key.name === "c") {
       renderer.destroy();
+      return;
+    }
+    if (key.name === "escape") {
+      const back = BACK_MAP[screen];
+      if (back) setScreen(back);
+      else renderer.destroy();
     }
   });
 
@@ -53,6 +68,7 @@ export function App() {
         <NoAccessScreen
           onMember={() => setScreen("troubleshoot")}
           onNotMember={() => setScreen("upsell")}
+          onBack={() => setScreen("welcome")}
         />
       );
 
@@ -60,15 +76,13 @@ export function App() {
       return (
         <TroubleshootScreen
           onRetry={() => setScreen("access-check")}
-          onGoToPage={() => {
-            openBrowser(URLS.platano);
-            renderer.destroy();
-          }}
+          onGoToPage={() => openBrowser(URLS.platano)}
+          onBack={() => setScreen("no-access")}
         />
       );
 
     case "upsell":
-      return <UpsellScreen />;
+      return <UpsellScreen onBack={() => setScreen("no-access")} />;
 
     case "project-setup":
       return (
@@ -78,6 +92,7 @@ export function App() {
             setProjectName(name);
             setScreen("cloning");
           }}
+          onBack={() => setScreen("welcome")}
         />
       );
 

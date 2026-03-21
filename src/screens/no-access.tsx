@@ -5,9 +5,11 @@ import { SelectMenu } from "../components/select-menu";
 export function NoAccessScreen({
   onMember,
   onNotMember,
+  onBack,
 }: {
   onMember: () => void;
   onNotMember: () => void;
+  onBack: () => void;
 }) {
   const options = [
     {
@@ -19,6 +21,11 @@ export function NoAccessScreen({
       name: "No, tell me more",
       description: "I'd like to get access",
       value: "not-member" as const,
+    },
+    {
+      name: "← Go back",
+      description: "",
+      value: "back" as const,
     },
   ];
 
@@ -36,7 +43,8 @@ export function NoAccessScreen({
         options={options}
         onSelect={(value) => {
           if (value === "member") onMember();
-          else onNotMember();
+          else if (value === "not-member") onNotMember();
+          else onBack();
         }}
       />
     </ScreenLayout>

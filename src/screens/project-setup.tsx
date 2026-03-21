@@ -1,17 +1,26 @@
 import { useState, useCallback } from "react";
 import { TextAttributes } from "@opentui/core";
+import { useKeyboard } from "@opentui/react";
 import { ScreenLayout } from "../components/screen-layout";
 import type { Template } from "../types";
 
 export function ProjectSetupScreen({
   template,
   onClone,
+  onBack,
 }: {
   template: Template;
   onClone: (name: string) => void;
+  onBack: () => void;
 }) {
   const [name, setName] = useState("my-app");
   const [error, setError] = useState("");
+
+  useKeyboard((key) => {
+    if (key.name === "backspace" && name === "") {
+      onBack();
+    }
+  });
 
   const validate = useCallback((value: string): string | null => {
     if (!value.trim()) return "Project name cannot be empty";

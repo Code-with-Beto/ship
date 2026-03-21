@@ -1,12 +1,12 @@
+import { useState } from "react";
 import { TextAttributes } from "@opentui/core";
-import { useRenderer } from "@opentui/react";
 import { ScreenLayout } from "../components/screen-layout";
 import { SelectMenu } from "../components/select-menu";
 import { openBrowser } from "../utils";
 import { URLS } from "../types";
 
-export function UpsellScreen() {
-  const renderer = useRenderer();
+export function UpsellScreen({ onBack }: { onBack: () => void }) {
+  const [linkOpened, setLinkOpened] = useState(false);
 
   const options = [
     {
@@ -19,7 +19,51 @@ export function UpsellScreen() {
       description: "Access all templates, courses & community",
       value: "pro" as const,
     },
+    {
+      name: "← Go back",
+      description: "",
+      value: "back" as const,
+    },
   ];
+
+  const afterOptions = [
+    {
+      name: "Open link again",
+      description: "",
+      value: "reopen" as const,
+    },
+    {
+      name: "← Go back",
+      description: "",
+      value: "back" as const,
+    },
+  ];
+
+  const [lastUrl, setLastUrl] = useState("");
+
+  if (linkOpened) {
+    return (
+      <ScreenLayout>
+        <box justifyContent="center" marginTop={2}>
+          <text fg="green" attributes={TextAttributes.BOLD}>
+            ✓ Link opened in your browser!
+          </text>
+        </box>
+        <box justifyContent="center" marginTop={1}>
+          <text attributes={TextAttributes.DIM}>
+            Complete your purchase there, then come back and run ship again.
+          </text>
+        </box>
+        <SelectMenu
+          options={afterOptions}
+          onSelect={(value) => {
+            if (value === "reopen") openBrowser(lastUrl);
+            else onBack();
+          }}
+        />
+      </ScreenLayout>
+    );
+  }
 
   return (
     <ScreenLayout>
@@ -43,12 +87,14 @@ export function UpsellScreen() {
       <SelectMenu
         options={options}
         onSelect={(value) => {
-          if (value === "platano") {
-            openBrowser(URLS.platano);
-          } else {
-            openBrowser(URLS.pricing);
+          if (value === "back") {
+            onBack();
+            return;
           }
-          renderer.destroy();
+          const url = value === "platano" ? URLS.platano : URLS.pricing;
+          openBrowser(url);
+          setLastUrl(url);
+          setLinkOpened(true);
         }}
       />
     </ScreenLayout>

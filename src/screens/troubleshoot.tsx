@@ -5,9 +5,11 @@ import { SelectMenu } from "../components/select-menu";
 export function TroubleshootScreen({
   onRetry,
   onGoToPage,
+  onBack,
 }: {
   onRetry: () => void;
   onGoToPage: () => void;
+  onBack: () => void;
 }) {
   const options = [
     {
@@ -19,6 +21,11 @@ export function TroubleshootScreen({
       name: "Take me to the Platano page",
       description: "Open in browser",
       value: "page" as const,
+    },
+    {
+      name: "← Go back",
+      description: "",
+      value: "back" as const,
     },
   ];
 
@@ -48,7 +55,8 @@ export function TroubleshootScreen({
         options={options}
         onSelect={(value) => {
           if (value === "retry") onRetry();
-          else onGoToPage();
+          else if (value === "page") onGoToPage();
+          else onBack();
         }}
       />
     </ScreenLayout>

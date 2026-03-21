@@ -13,7 +13,7 @@ export async function checkGitAccess(repoUrl: string): Promise<boolean> {
 
 export async function cloneRepo(
   repoUrl: string,
-  name: string
+  name: string,
 ): Promise<{ ok: boolean; error?: string }> {
   const exists = await Bun.$`test -d ${name}`.nothrow().quiet();
   if (exists.exitCode === 0) {
