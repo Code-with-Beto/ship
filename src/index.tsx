@@ -3,10 +3,18 @@ import { createRoot } from "@opentui/react";
 
 function App() {
   return (
-    <box alignItems="center" justifyContent="center" flexGrow={1}>
+    <box
+      alignItems="center"
+      justifyContent="center"
+      flexGrow={1}
+      border={true}
+      borderColor={"yellow"}
+      borderStyle="heavy"
+    >
       <box justifyContent="center" alignItems="flex-end">
-        <ascii-font font="tiny" text="OpenTUI" />
-        <text attributes={TextAttributes.DIM}>What will you build?</text>
+        <text>🍌</text>
+        <ascii-font font="tiny" text="Code with Beto" />
+        <text attributes={TextAttributes.DIM}>Make apps happen!</text>
       </box>
     </box>
   );
