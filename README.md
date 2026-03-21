@@ -24,4 +24,6 @@ These packages are part of the [Code with Beto](https://cwb.sh?r=gh) ecosystem. 
 - [Pro Membership](https://cwb.sh?r=gh) - Courses, private repos, Discord community, and direct access to the team
 - [YouTube](https://youtube.com/@codewithbeto) - Free tutorials and content
 
+---
+
 Built with [OpenTUI](https://git.new/create-tui).
