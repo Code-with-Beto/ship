@@ -18,7 +18,8 @@ export interface Template {
 export const TEMPLATES: Template[] = [
   {
     name: "🍌 Platano",
-    description: "React Native Starter",
+    description:
+      "A production-ready React Native template with in-app purchases, AI image generation, and App Store assets — ship and monetize from day one.",
     repo: "https://github.com/Code-with-Beto/platano.git",
   },
 ];
