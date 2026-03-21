@@ -31,6 +31,6 @@ jobs:
           else
             echo "tag=latest" >> "$GITHUB_OUTPUT"
           fi
-      - run: npm publish --tag ${{ steps.dist-tag.outputs.tag }}
+      - run: npm publish --access public --tag ${{ steps.dist-tag.outputs.tag }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
