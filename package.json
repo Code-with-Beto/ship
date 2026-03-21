@@ -1,8 +1,14 @@
 {
-  "name": "ship",
-  "module": "src/index.tsx",
+  "name": "@codewithbeto/ship",
+  "version": "0.0.1",
   "type": "module",
-  "private": true,
+  "private": false,
+  "bin": {
+    "ship": "src/index.tsx"
+  },
+  "files": [
+    "src"
+  ],
   "scripts": {
     "dev": "bun run --watch src/index.tsx"
   },
