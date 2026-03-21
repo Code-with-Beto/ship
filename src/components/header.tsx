@@ -1,8 +1,8 @@
 export function Header() {
   return (
-    <box justifyContent="center" alignItems="flex-end">
+    <box justifyContent="center">
       <text>🍌</text>
-      <ascii-font font="tiny" text="Code with Beto" color="yellow" />
+      <ascii-font font="tiny" text="Code with Beto" color="white" />
     </box>
   );
 }

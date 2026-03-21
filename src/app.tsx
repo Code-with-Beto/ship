@@ -17,7 +17,7 @@ export function App() {
   const renderer = useRenderer();
   const [screen, setScreen] = useState<Screen>("welcome");
   const [selectedTemplate, setSelectedTemplate] = useState<Template>(
-    TEMPLATES[0]!
+    TEMPLATES[0]!,
   );
   const [projectName, setProjectName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
