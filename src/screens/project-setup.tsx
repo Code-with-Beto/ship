@@ -17,7 +17,7 @@ export function ProjectSetupScreen({
   const [error, setError] = useState("");
 
   useKeyboard((key) => {
-    if (key.name === "backspace" && name === "") {
+    if (key.name === "escape") {
       onBack();
     }
   });
