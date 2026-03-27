@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useKeyboard, useRenderer } from "@opentui/react";
 import type { Screen, Template } from "./types";
 import { TEMPLATES, URLS } from "./types";
 import { openBrowser } from "./utils";
+import { track, trackAndWait } from "./tracking";
 import { WelcomeScreen } from "./screens/welcome";
 import { AccessCheckScreen } from "./screens/access-check";
 import { NoAccessScreen } from "./screens/no-access";
@@ -22,6 +23,10 @@ export function App() {
   const [projectName, setProjectName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
+  useEffect(() => {
+    track("cli_started");
+  }, []);
+
   const BACK_MAP: Partial<Record<Screen, Screen>> = {
     "access-check": "welcome",
     "no-access": "welcome",
@@ -33,13 +38,16 @@ export function App() {
 
   useKeyboard((key) => {
     if (key.ctrl && key.name === "c") {
-      renderer.destroy();
+      trackAndWait("exit_early", { screen }).then(() => renderer.destroy());
       return;
     }
     if (key.name === "escape") {
       const back = BACK_MAP[screen];
       if (back) setScreen(back);
-      else renderer.destroy();
+      else
+        trackAndWait("exit_early", { screen }).then(() =>
+          renderer.destroy(),
+        );
     }
   });
 
@@ -58,8 +66,14 @@ export function App() {
       return (
         <AccessCheckScreen
           template={selectedTemplate}
-          onSuccess={() => setScreen("project-setup")}
-          onFailure={() => setScreen("no-access")}
+          onSuccess={() => {
+            track("access_check_passed", { template: selectedTemplate.name });
+            setScreen("project-setup");
+          }}
+          onFailure={() => {
+            track("access_check_failed", { template: selectedTemplate.name });
+            setScreen("no-access");
+          }}
         />
       );
 
@@ -101,7 +115,10 @@ export function App() {
         <CloningScreen
           template={selectedTemplate}
           projectName={projectName}
-          onDone={() => setScreen("done")}
+          onDone={() => {
+            track("clone_success", { template: selectedTemplate.name });
+            setScreen("done");
+          }}
           onError={(msg) => {
             setErrorMessage(msg);
             setScreen("error");

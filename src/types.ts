@@ -27,4 +27,5 @@ export const TEMPLATES: Template[] = [
 export const URLS = {
   platano: "https://cwb.sh/platano?r=ship-cli",
   pricing: "https://codewithbeto.dev/pricing",
+  newsletter: "https://cwb.sh/newsletter?r=ship-cli",
 };
