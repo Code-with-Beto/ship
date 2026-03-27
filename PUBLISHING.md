@@ -15,6 +15,12 @@ Published to npm as [`@codewithbeto/ship`](https://www.npmjs.com/package/@codewi
 3. Click **Publish release** — the workflow runs automatically
 4. Mark as **pre-release** to publish under the `beta` dist-tag instead of `latest`
 
+Or from the CLI:
+
+```sh
+gh release create v0.1.0 --title "v0.1.0" --notes "Release notes here"
+```
+
 ## Via Actions Tab (manual)
 
 1. Go to **Actions** → **Publish Package** → **Run workflow**
