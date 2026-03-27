@@ -8,8 +8,7 @@ export async function checkGitAccess(repoUrl: string): Promise<boolean> {
     stderr: "ignore",
   });
   const code = await proc.exited;
-  // return code === 0;
-  return false;
+  return code === 0;
 }
 
 export async function cloneRepo(
