@@ -21,6 +21,8 @@ bun dev
 
 ## Non-interactive (AI agents)
 
+> **AI agents:** See [AGENTS.md](./AGENTS.md) for a concise reference.
+
 Pass flags to skip the TUI entirely. Every input is a flag, output is structured text, and errors fail fast with actionable messages.
 
 ```bash

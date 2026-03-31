@@ -157,6 +157,7 @@ async function dryRun(flags: CliFlags, template: Template) {
     log(`  rc_key_android: ${flags.rcKeyAndroid}`);
   }
   log(`would install dependencies`);
+  log(`would initialize git repo with baseline commit`);
   log(`no changes made.`);
 }
 
