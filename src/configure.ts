@@ -1,4 +1,5 @@
 import type { OnboardingResult } from "./types";
+import { gitInit } from "./utils";
 
 export async function configureProject(
   projectName: string,
@@ -80,6 +81,12 @@ export async function configureProject(
       .quiet();
     if (install.exitCode !== 0) {
       return { ok: false, error: "Failed to install dependencies" };
+    }
+
+    // 5. Initialize git with baseline commit
+    const git = await gitInit(projectName);
+    if (!git.ok) {
+      return { ok: false, error: git.error };
     }
 
     return { ok: true };

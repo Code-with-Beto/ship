@@ -30,3 +30,15 @@ export async function cloneRepo(
   await Bun.$`rm -rf ${name}/.git`.nothrow().quiet();
   return { ok: true };
 }
+
+export async function gitInit(
+  projectDir: string,
+): Promise<{ ok: boolean; error?: string }> {
+  const init = await Bun.$`cd ${projectDir} && git init && git add -A && git commit -m "ship init — powered by Code with Beto"`
+    .nothrow()
+    .quiet();
+  if (init.exitCode !== 0) {
+    return { ok: false, error: "Failed to initialize git repository" };
+  }
+  return { ok: true };
+}
