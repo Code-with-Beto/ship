@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useKeyboard, useRenderer } from "@opentui/react";
-import type { Screen, Template } from "./types";
+import type { Screen, Template, OnboardingResult } from "./types";
 import { TEMPLATES, URLS } from "./types";
 import { openBrowser } from "./utils";
 import { track, trackAndWait } from "./tracking";
@@ -11,6 +11,8 @@ import { TroubleshootScreen } from "./screens/troubleshoot";
 import { UpsellScreen } from "./screens/upsell";
 import { ProjectSetupScreen } from "./screens/project-setup";
 import { CloningScreen } from "./screens/cloning";
+import { OnboardingScreen } from "./screens/onboarding";
+import { ConfiguringScreen } from "./screens/configuring";
 import { DoneScreen } from "./screens/done";
 import { ErrorScreen } from "./screens/error";
 
@@ -21,7 +23,10 @@ export function App() {
     TEMPLATES[0]!,
   );
   const [projectName, setProjectName] = useState("");
+  const [onboardingResult, setOnboardingResult] =
+    useState<OnboardingResult | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [retryScreen, setRetryScreen] = useState<Screen>("project-setup");
 
   useEffect(() => {
     track("cli_started");
@@ -117,23 +122,62 @@ export function App() {
           projectName={projectName}
           onDone={() => {
             track("clone_success", { template: selectedTemplate.name });
+            setScreen("onboarding");
+          }}
+          onError={(msg) => {
+            setErrorMessage(msg);
+            setRetryScreen("project-setup");
+            setScreen("error");
+          }}
+        />
+      );
+
+    case "onboarding":
+      return (
+        <OnboardingScreen
+          projectName={projectName}
+          onComplete={(result) => {
+            setOnboardingResult(result);
+            track("onboarding_complete", {
+              template: selectedTemplate.name,
+            });
+            setScreen("configuring");
+          }}
+        />
+      );
+
+    case "configuring":
+      return (
+        <ConfiguringScreen
+          projectName={projectName}
+          onboardingResult={onboardingResult!}
+          onDone={() => {
+            track("configure_success", {
+              template: selectedTemplate.name,
+            });
             setScreen("done");
           }}
           onError={(msg) => {
             setErrorMessage(msg);
+            setRetryScreen("onboarding");
             setScreen("error");
           }}
         />
       );
 
     case "done":
-      return <DoneScreen projectName={projectName} />;
+      return (
+        <DoneScreen
+          projectName={projectName}
+          onboardingResult={onboardingResult!}
+        />
+      );
 
     case "error":
       return (
         <ErrorScreen
           message={errorMessage}
-          onRetry={() => setScreen("project-setup")}
+          onRetry={() => setScreen(retryScreen)}
         />
       );
 

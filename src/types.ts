@@ -6,8 +6,19 @@ export type Screen =
   | "upsell"
   | "project-setup"
   | "cloning"
+  | "onboarding"
+  | "configuring"
   | "done"
   | "error";
+
+export interface OnboardingResult {
+  appName: string;
+  slug: string;
+  bundleId: string;
+  payments: boolean;
+  rcTestKeyIos: string;
+  rcTestKeyAndroid: string;
+}
 
 export interface Template {
   name: string;
