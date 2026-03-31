@@ -3,25 +3,8 @@ import { TextAttributes } from "@opentui/core";
 import { useKeyboard } from "@opentui/react";
 import { userInfo } from "node:os";
 import { ScreenLayout } from "../components/screen-layout";
+import { toSlug, toTitleCase, sanitizeUsername } from "../types";
 import type { OnboardingResult } from "../types";
-
-function toSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
-function toTitleCase(name: string): string {
-  return name
-    .replace(/[-_.]+/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function sanitizeUsername(username: string): string {
-  return username.toLowerCase().replace(/[^a-z0-9]/g, "") || "mycompany";
-}
 
 export function OnboardingScreen({
   projectName,

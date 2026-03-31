@@ -1,7 +1,13 @@
 #!/usr/bin/env bun
-import { createCliRenderer } from "@opentui/core";
-import { createRoot } from "@opentui/react";
-import { App } from "./app";
+import { isNonInteractive, runCli } from "./cli";
 
-const renderer = await createCliRenderer({ exitOnCtrlC: false });
-createRoot(renderer).render(<App />);
+if (isNonInteractive(process.argv)) {
+  await runCli(process.argv);
+} else {
+  const { createCliRenderer } = await import("@opentui/core");
+  const { createRoot } = await import("@opentui/react");
+  const { App } = await import("./app");
+
+  const renderer = await createCliRenderer({ exitOnCtrlC: false });
+  createRoot(renderer).render(<App />);
+}

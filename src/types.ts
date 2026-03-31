@@ -40,3 +40,21 @@ export const URLS = {
   pricing: "https://codewithbeto.dev/pricing",
   newsletter: "https://cwb.sh/newsletter?r=ship-cli",
 };
+
+export function toSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+export function toTitleCase(name: string): string {
+  return name
+    .replace(/[-_.]+/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+export function sanitizeUsername(username: string): string {
+  return username.toLowerCase().replace(/[^a-z0-9]/g, "") || "mycompany";
+}
