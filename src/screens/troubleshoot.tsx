@@ -42,13 +42,13 @@ export function TroubleshootScreen({
       >
         <text>Make sure you:</text>
         <text attributes={TextAttributes.DIM}>
-          {" "}1. Are logged into GitHub (run: gh auth login)
+          {" "}1. Used the same GitHub account you signed up with
         </text>
         <text attributes={TextAttributes.DIM}>
-          {" "}2. Your account is part of the Code-with-Beto org
+          {" "}2. Your account has been added to the Code-with-Beto org
         </text>
         <text attributes={TextAttributes.DIM}>
-          {" "}3. Or you have direct access to the Platano repo
+          {" "}3. Check your email for a GitHub org invite you may need to accept
         </text>
       </box>
       <SelectMenu

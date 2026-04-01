@@ -2,7 +2,7 @@ import { userInfo } from "node:os";
 import pkg from "../package.json";
 import { TEMPLATES, URLS, toSlug, toTitleCase, sanitizeUsername } from "./types";
 import type { Template, OnboardingResult } from "./types";
-import { checkGitAccess, cloneRepo } from "./utils";
+import { diagnoseGitSetup, cloneRepo } from "./utils";
 import { configureProject } from "./configure";
 import { track, trackAndWait } from "./tracking";
 
@@ -165,13 +165,41 @@ async function run(flags: CliFlags, template: Template) {
   track("cli_started");
 
   log(`checking access to ${flags.template}...`);
-  const hasAccess = await checkGitAccess(template.repo);
-  if (!hasAccess) {
-    track("access_check_failed", { template: template.name });
-    fail(
-      `git access denied for ${flags.template} template`,
-      `Ensure you have access: ${URLS.platano}\n  Then retry: ship --name ${flags.name}`,
-    );
+  const diagnosis = await diagnoseGitSetup(template.repo);
+  if (diagnosis !== "ready") {
+    track("access_check_failed", { template: template.name, reason: diagnosis });
+    switch (diagnosis) {
+      case "no-git":
+        fail(
+          "git is not installed",
+          "Install git: https://git-scm.com/downloads\n  On macOS: xcode-select --install",
+        );
+        break;
+      case "no-gh":
+        fail(
+          "GitHub CLI (gh) is not installed",
+          "Install it: https://cli.github.com\n  On macOS: brew install gh",
+        );
+        break;
+      case "gh-not-authenticated":
+        fail(
+          "GitHub CLI is not authenticated",
+          `Run: gh auth login\n  Then retry: ship --name ${flags.name}`,
+        );
+        break;
+      case "git-credential-issue":
+        fail(
+          "git can't access GitHub — credential helper not configured",
+          `Run: gh auth setup-git\n  Then retry: ship --name ${flags.name}`,
+        );
+        break;
+      case "no-access":
+        fail(
+          `access denied for ${flags.template} template`,
+          `Ensure you have access: ${URLS.platano}\n  Then retry: ship --name ${flags.name}`,
+        );
+        break;
+    }
   }
   track("access_check_passed", { template: template.name });
 

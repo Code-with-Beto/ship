@@ -16,6 +16,7 @@ function getVisitorId(): string {
 interface TrackingMeta {
   screen?: string;
   template?: string;
+  reason?: string;
 }
 
 async function sendEvent(
@@ -39,6 +40,7 @@ async function sendEvent(
           os: OS,
           version: CLI_VERSION,
           ...(meta?.template && { template: meta.template }),
+          ...(meta?.reason && { reason: meta.reason }),
         },
       },
     }),

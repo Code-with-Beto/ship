@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import { useKeyboard, useRenderer } from "@opentui/react";
 import type { Screen, Template, OnboardingResult } from "./types";
 import { TEMPLATES, URLS } from "./types";
+import type { GitDiagnosisStatus } from "./utils";
 import { openBrowser } from "./utils";
 import { track, trackAndWait } from "./tracking";
 import { WelcomeScreen } from "./screens/welcome";
 import { AccessCheckScreen } from "./screens/access-check";
+import { GitSetupScreen } from "./screens/git-setup";
 import { NoAccessScreen } from "./screens/no-access";
 import { TroubleshootScreen } from "./screens/troubleshoot";
 import { UpsellScreen } from "./screens/upsell";
@@ -27,6 +29,8 @@ export function App() {
     useState<OnboardingResult | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [retryScreen, setRetryScreen] = useState<Screen>("project-setup");
+  const [gitSetupStatus, setGitSetupStatus] =
+    useState<GitDiagnosisStatus>("no-gh");
 
   useEffect(() => {
     track("cli_started");
@@ -34,6 +38,7 @@ export function App() {
 
   const BACK_MAP: Partial<Record<Screen, Screen>> = {
     "access-check": "welcome",
+    "git-setup": "welcome",
     "no-access": "welcome",
     troubleshoot: "no-access",
     upsell: "no-access",
@@ -71,14 +76,35 @@ export function App() {
       return (
         <AccessCheckScreen
           template={selectedTemplate}
-          onSuccess={() => {
-            track("access_check_passed", { template: selectedTemplate.name });
-            setScreen("project-setup");
+          onResult={(status) => {
+            if (status === "ready") {
+              track("access_check_passed", {
+                template: selectedTemplate.name,
+              });
+              setScreen("project-setup");
+            } else if (status === "no-access") {
+              track("access_check_failed", {
+                template: selectedTemplate.name,
+              });
+              setScreen("no-access");
+            } else {
+              track("access_check_failed", {
+                template: selectedTemplate.name,
+                reason: status,
+              });
+              setGitSetupStatus(status);
+              setScreen("git-setup");
+            }
           }}
-          onFailure={() => {
-            track("access_check_failed", { template: selectedTemplate.name });
-            setScreen("no-access");
-          }}
+        />
+      );
+
+    case "git-setup":
+      return (
+        <GitSetupScreen
+          status={gitSetupStatus}
+          onRetry={() => setScreen("access-check")}
+          onBack={() => setScreen("welcome")}
         />
       );
 

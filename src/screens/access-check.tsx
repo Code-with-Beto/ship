@@ -2,25 +2,21 @@ import { useEffect } from "react";
 import { TextAttributes } from "@opentui/core";
 import { ScreenLayout } from "../components/screen-layout";
 import { useLoadingDots } from "../hooks/use-loading-dots";
-import { checkGitAccess } from "../utils";
+import { diagnoseGitSetup } from "../utils";
+import type { GitDiagnosisStatus } from "../utils";
 import type { Template } from "../types";
 
 export function AccessCheckScreen({
   template,
-  onSuccess,
-  onFailure,
+  onResult,
 }: {
   template: Template;
-  onSuccess: () => void;
-  onFailure: () => void;
+  onResult: (status: GitDiagnosisStatus) => void;
 }) {
   const dots = useLoadingDots();
 
   useEffect(() => {
-    checkGitAccess(template.repo).then((hasAccess) => {
-      if (hasAccess) onSuccess();
-      else onFailure();
-    });
+    diagnoseGitSetup(template.repo).then(onResult);
   }, [template.repo]);
 
   return (

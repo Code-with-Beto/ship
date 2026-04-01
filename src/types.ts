@@ -1,6 +1,7 @@
 export type Screen =
   | "welcome"
   | "access-check"
+  | "git-setup"
   | "no-access"
   | "troubleshoot"
   | "upsell"
