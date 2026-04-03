@@ -31,6 +31,7 @@ export function App() {
   const [retryScreen, setRetryScreen] = useState<Screen>("project-setup");
   const [gitSetupStatus, setGitSetupStatus] =
     useState<GitDiagnosisStatus>("no-gh");
+  const [accessCheckKey, setAccessCheckKey] = useState(0);
 
   useEffect(() => {
     track("cli_started");
@@ -75,6 +76,7 @@ export function App() {
     case "access-check":
       return (
         <AccessCheckScreen
+          key={accessCheckKey}
           template={selectedTemplate}
           onResult={(status) => {
             if (status === "ready") {
@@ -103,7 +105,10 @@ export function App() {
       return (
         <GitSetupScreen
           status={gitSetupStatus}
-          onRetry={() => setScreen("access-check")}
+          onRetry={() => {
+            setAccessCheckKey((k) => k + 1);
+            setScreen("access-check");
+          }}
           onBack={() => setScreen("welcome")}
         />
       );
@@ -120,7 +125,10 @@ export function App() {
     case "troubleshoot":
       return (
         <TroubleshootScreen
-          onRetry={() => setScreen("access-check")}
+          onRetry={() => {
+            setAccessCheckKey((k) => k + 1);
+            setScreen("access-check");
+          }}
           onGoToPage={() => openBrowser(URLS.platano)}
           onBack={() => setScreen("no-access")}
         />
