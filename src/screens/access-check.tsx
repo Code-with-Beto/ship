@@ -16,7 +16,9 @@ export function AccessCheckScreen({
   const dots = useLoadingDots();
 
   useEffect(() => {
-    diagnoseGitSetup(template.repo).then(onResult);
+    diagnoseGitSetup(template.repo).then(onResult).catch(() => {
+      onResult("no-access");
+    });
   }, [template.repo]);
 
   return (

@@ -3,12 +3,7 @@ export function openBrowser(url: string) {
 }
 
 export async function checkGitAccess(repoUrl: string): Promise<boolean> {
-  const proc = Bun.spawn(["git", "ls-remote", repoUrl, "HEAD"], {
-    stdout: "ignore",
-    stderr: "ignore",
-  });
-  const code = await proc.exited;
-  return code === 0;
+  return (await spawnAndWait(["git", "ls-remote", repoUrl, "HEAD"])) === 0;
 }
 
 export type GitDiagnosisStatus =
@@ -24,40 +19,52 @@ function parseGitHubRepo(url: string): string | null {
   return match?.[1] ?? null;
 }
 
+const SILENT = { stdout: "ignore", stderr: "ignore", stdin: "ignore" } as const;
+const SUBPROCESS_TIMEOUT_MS = 15_000;
+
+async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error("subprocess timed out")), ms),
+  );
+  return Promise.race([promise, timeout]);
+}
+
+async function spawnAndWait(
+  cmd: string[],
+  timeoutMs = SUBPROCESS_TIMEOUT_MS,
+): Promise<number> {
+  const proc = Bun.spawn(cmd, SILENT);
+  try {
+    return await withTimeout(proc.exited, timeoutMs);
+  } catch {
+    proc.kill();
+    return 1;
+  }
+}
+
 export async function diagnoseGitSetup(
   repoUrl: string,
 ): Promise<GitDiagnosisStatus> {
-  const gitCheck = Bun.spawn(["git", "--version"], {
-    stdout: "ignore",
-    stderr: "ignore",
-  });
-  if ((await gitCheck.exited) !== 0) return "no-git";
-
-  const ghCheck = Bun.spawn(["gh", "--version"], {
-    stdout: "ignore",
-    stderr: "ignore",
-  });
-  if ((await ghCheck.exited) !== 0) return "no-gh";
-
-  const authCheck = Bun.spawn(["gh", "auth", "status"], {
-    stdout: "ignore",
-    stderr: "ignore",
-  });
-  if ((await authCheck.exited) !== 0) return "gh-not-authenticated";
-
-  const accessCheck = Bun.spawn(["git", "ls-remote", repoUrl, "HEAD"], {
-    stdout: "ignore",
-    stderr: "ignore",
-  });
-  if ((await accessCheck.exited) === 0) return "ready";
+  if ((await spawnAndWait(["git", "--version"])) !== 0) return "no-git";
+  if ((await spawnAndWait(["gh", "--version"])) !== 0) return "no-gh";
+  if ((await spawnAndWait(["gh", "auth", "status"])) !== 0)
+    return "gh-not-authenticated";
+  if ((await spawnAndWait(["git", "ls-remote", repoUrl, "HEAD"])) === 0)
+    return "ready";
 
   const ownerRepo = parseGitHubRepo(repoUrl);
   if (ownerRepo) {
-    const repoCheck = Bun.spawn(
-      ["gh", "repo", "view", ownerRepo, "--json", "name"],
-      { stdout: "ignore", stderr: "ignore" },
-    );
-    if ((await repoCheck.exited) === 0) return "git-credential-issue";
+    if (
+      (await spawnAndWait([
+        "gh",
+        "repo",
+        "view",
+        ownerRepo,
+        "--json",
+        "name",
+      ])) === 0
+    )
+      return "git-credential-issue";
   }
 
   return "no-access";
