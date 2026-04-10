@@ -2,6 +2,17 @@
 
 CLI tool for scaffolding Code with Beto templates.
 
+## Requirements
+
+Before running `ship`, make sure you have the following installed:
+
+- [Git](https://git-scm.com/downloads) — for cloning templates
+- [GitHub CLI (`gh`)](https://cli.github.com) — for authenticating and accessing private templates
+  - macOS: `brew install gh`
+  - After install, run `gh auth login` to authenticate
+
+> **Note:** Templates are private repositories. You must be a [Pro Member](https://cwb.sh/pro) and have `gh` installed and authenticated.
+
 ## Interactive (humans)
 
 ```bash

@@ -33,7 +33,12 @@ async function spawnAndWait(
   cmd: string[],
   timeoutMs = SUBPROCESS_TIMEOUT_MS,
 ): Promise<number> {
-  const proc = Bun.spawn(cmd, SILENT);
+  let proc: ReturnType<typeof Bun.spawn>;
+  try {
+    proc = Bun.spawn(cmd, SILENT);
+  } catch {
+    return 1;
+  }
   try {
     return await withTimeout(proc.exited, timeoutMs);
   } catch {

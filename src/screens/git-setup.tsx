@@ -30,6 +30,11 @@ const SETUP_INFO: Partial<Record<GitDiagnosisStatus, SetupInfo>> = {
       { text: "" },
       { text: "On macOS with Homebrew:" },
       { text: "  brew install gh", bold: true },
+      { text: "" },
+      { text: "Learn more:  https://github.com/Code-with-Beto/ship" },
+      { text: "" },
+      { text: "Still having issues? Try cloning the project directly:" },
+      { text: "  https://github.com/Code-with-Beto/platano" },
     ],
   },
   "gh-not-authenticated": {
